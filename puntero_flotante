@@ -1,0 +1,32 @@
+#include <stdio.h>
+
+int main(){ 
+    float flotante;
+    char *pflot=(unsigned char*)&flotante;
+    char byteApuntado;
+    
+    printf("Ingrese el flotante al que quiere apuntar:\n");
+    scanf("%f",&flotante);
+    printf("Seleccione el numero de byte que quiere ver:\n");
+    scanf("%hhd",&byteApuntado);
+    
+    switch(byteApuntado){
+        case 0:
+        printf("El valor del flotante es: %x\n", *pflot);
+        break;
+        case 1:
+        printf("El valor del flotante es: %x\n",*(pflot+1));
+        break;
+        case 2:
+        printf("El valor del flotante es: %x\n",*(pflot+2));
+        break;
+        case 3:
+        printf("El valor del flotante:%x\n",*(pflot+3));
+        break;
+    }
+}
+    
+
+
+
+
