@@ -1,0 +1,17 @@
+#include <stdio.h>
+union puntos{
+    float miNumero;
+    unsigned char byte[4];
+}var;
+
+int main(){
+    printf("Ingrese su valor flotante:\n");
+    scanf("%f",&var.miNumero);
+    printf("El valor flotante en hexadecimal es:\n");
+    printf("0x%x",var.byte[3]);
+    printf("%x",var.byte[2]);
+    printf("%x",var.byte[1]);
+    printf("%x",var.byte[0]);
+  
+  return 0;
+}
