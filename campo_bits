@@ -1,0 +1,37 @@
+#include <stdio.h>
+union{
+    struct{
+        unsigned int mantisa: 23;
+        unsigned int exponente: 8;
+        unsigned int signo: 1;
+    };
+    float flotante;
+}miValor; 
+
+void ConversorBinario(int valor,int tam);
+
+int main() {
+    int exponente=7;
+    int mantisa=22;
+    int signo=1;
+    printf("Ingrese el valor que quiere representar en el estándar IEEE 754\n");
+    scanf("%f",&miValor.flotante);
+    printf("El bit de signo es:%d\n",miValor.signo);
+    printf("El exponente es:");
+    ConversorBinario(miValor.exponente,exponente);
+    printf("La mantisa es:");
+    ConversorBinario(miValor.mantisa,mantisa);
+}
+void ConversorBinario(int valor,int tam){
+     int a,b;
+     for(a=tam;a>=0;a--){
+        b=valor>>a;
+        if(b&1){
+            printf("1");
+        }   
+        else{
+            printf("0");
+        }
+    } 
+   printf("\n");
+}
