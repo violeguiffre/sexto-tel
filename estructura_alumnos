@@ -1,0 +1,38 @@
+#include <stdio.h>
+
+struct alumnos{
+    unsigned char nombreAlumno[21];
+    unsigned char apellidoAlumno[21];
+    unsigned int aAlumno;
+    unsigned char region[21];
+    unsigned int edad;
+
+}alumno[2];
+
+int main(void) {
+    unsigned char i;
+    unsigned char j;
+  
+    for(int i=0;i<2;i++){
+        printf("Inserte el nombre del alumno: \n");
+        scanf("%s",alumno[i].nombreAlumno);
+        printf("Inserte el apellido del alumno: \n");
+        scanf("%s",alumno[i].apellidoAlumno);
+        printf("Inserte el año del alumno: \n");
+        scanf("%d",&alumno[i].aAlumno);
+        printf("Inserte la region del alumno:\n");
+        scanf("%s",alumno[i].region);
+        printf("Inserte la edad del alumno:\n");
+        scanf("%d",&alumno[i].edad);
+    }
+    for(int j=0; j<2;j++){
+        printf("\nLos datos del alumno son:\n");
+        printf("\nEl nombre del alumno es: %s ",alumno[j].nombreAlumno);
+        printf("\nEl apellido del alumno es: %s  ",alumno[j].apellidoAlumno);
+        printf("\nEl año del alumno es: %d \n",alumno[j].aAlumno);
+        printf("\nLa region del alumno es: %s \n",alumno[j].region);
+        printf("\nLa edad del alumno es: %d años",alumno[j].edad);
+    }
+    return (0);
+}
+  
