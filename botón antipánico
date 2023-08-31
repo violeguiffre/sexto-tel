@@ -1,0 +1,146 @@
+#include <LiquidCrystal.h>
+#define RETARDO 40
+#define PULSADOR 6
+
+unsigned long TiempoAhora=0;
+
+LiquidCrystal lcd(12,11,5,4,3,2);
+
+typedef enum{  
+    BUTTON_UP,
+    BUTTON_FALLING,
+    BUTTON_DOWN,
+    BUTTON_RAISING,
+}debounceState_t;
+
+typedef enum{  
+    ESPERANDO,
+    ENVIANDO,
+    ENVIADO,
+    NADA,
+}state_t;
+
+state_t estado=ESPERANDO;
+
+debounceState_t estadoPulsador;
+
+void debounceFSM_init(void); //cargar el estado inicial
+void debounceFSM_update(void); //actualizar los estados
+
+void buttonPressed();
+void buttonReleased();
+
+void FSM_LCD_update();
+
+void setup() {
+    pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(PULSADOR,INPUT); 
+    TiempoAhora=millis();
+  
+    Serial.begin(9600);
+    lcd.begin(16,2);
+    lcd.setCursor(0,0);
+    lcd.print("Sist. de asistencia");
+    lcd.setCursor(0,1);
+    lcd.print("sustentable");
+    delay(1000);
+    lcd.clear();//apaga el lcd
+    debounceFSM_init();
+}
+
+void loop(){
+    debounceFSM_update();
+    FSM_LCD_update();
+}
+
+void FSM_LCD_update(){
+    switch (estado){
+        case ESPERANDO:
+            lcd.clear();
+            lcd.setCursor(0,0);
+            lcd.print("Elija la linea");
+            lcd.setCursor(0,1);
+            lcd.print("correspondiente");
+            estado=NADA;	
+            break;
+
+       case ENVIANDO:
+            lcd.clear();
+            lcd.setCursor(0,0);
+            lcd.print("Enviando ubica-");
+            lcd.setCursor(0,1);
+            lcd.print("cion al 911");
+            delay(1000);
+            estado=NADA;
+            break;
+
+       case ENVIADO:
+
+            lcd.clear();
+            lcd.setCursor(0,0);
+            lcd.print("El mensaje ha");
+            lcd.setCursor(0,1);
+            lcd.print("sido enviado");
+            delay(1000);
+            estado=ESPERANDO;
+            break;
+       case NADA:
+            break;
+    }
+}
+
+void buttonReleased(void){
+    estado=ENVIADO;
+}
+
+void debounceFSM_init(void){
+    estadoPulsador=BUTTON_UP;
+}
+
+
+void debounceFSM_update(void){
+    int estado_p=digitalRead(PULSADOR);
+    switch(estadoPulsador){
+    case BUTTON_UP:
+      
+    if(millis()-TiempoAhora>RETARDO){
+        if(estado_p==HIGH){
+            estadoPulsador=BUTTON_FALLING;
+        }
+      }
+    break;
+    
+    case BUTTON_FALLING:
+        if(millis()-TiempoAhora>RETARDO){
+            if(estado_p==LOW){
+                estadoPulsador=BUTTON_UP;
+            }
+            else{
+                estadoPulsador=BUTTON_DOWN;
+            }
+        }
+        break;
+    case BUTTON_DOWN:
+        if(millis()-TiempoAhora>RETARDO){
+            buttonPressed();
+                if(estado_p==LOW){
+                estadoPulsador=BUTTON_RAISING;
+                }
+            }
+            break;
+     case BUTTON_RAISING:
+         if(millis()-TiempoAhora>RETARDO){
+             if(estado_p==HIGH){
+                 estadoPulsador=BUTTON_DOWN;
+             }
+             else{
+                 estadoPulsador=BUTTON_UP;
+                 buttonReleased();
+             }
+             break;
+         }
+   }
+}
+void buttonPressed(){
+    estado=ENVIANDO;
+}
