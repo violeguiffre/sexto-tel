@@ -1,0 +1,122 @@
+#define RETARDO 40
+#define PULSADOR 8
+#define FFINAL 15
+#define LED 9
+#define VAL_INICIAL 0
+
+unsigned long TiempoAhora=0;
+
+typedef enum{
+  BUTTON_UP,
+  BUTTON_FALLING,
+  BUTTON_DOWN,
+  BUTTON_RAISING,
+}debounceState_t;
+
+debounceState_t estadoPulsador;
+
+void debounceFSM_init(void);
+void debounceFSM_update(void);
+
+void buttonPressed();
+void buttonReleased();
+
+uint8_t conteo [16] = {
+ //GFEDCBA
+  B10000001,
+  B11110011,
+  B01001001,
+  B01100001,
+  B00110011,
+  B00100101,
+  B00000101,
+  B11110001,
+  B00000001,
+  B00100001,
+  B00010001,
+  B00000111,
+  B10001101,
+  B01000011,
+  B00001101,
+  B00011101,
+};
+
+uint8_t cont=0;
+
+void setup()
+{
+ pinMode(PULSADOR,INPUT); 
+ pinMode(LED,OUTPUT);
+ DDRD= B11111111;//pines que va a usar el display como salidas 
+ TiempoAhora=millis();
+ debounceFSM_init();
+  PORTD=conteo[VAL_INICIAL];
+}
+
+void loop()
+{
+  debounceFSM_update();
+ // PORTD = conteo[cont++];
+
+}
+
+void debounceFSM_init(void){
+  estadoPulsador=BUTTON_UP;
+}
+
+void debounceFSM_update(void){
+  
+  switch(estadoPulsador){
+    case (BUTTON_UP):
+      if(digitalRead(PULSADOR)==LOW){
+       estadoPulsador=BUTTON_FALLING;
+      }
+     
+    break;
+    
+    case (BUTTON_FALLING):
+     if(millis()-TiempoAhora>RETARDO){
+     TiempoAhora=millis();
+     if(digitalRead(PULSADOR)==LOW){
+     	estadoPulsador=BUTTON_DOWN;
+        buttonPressed();
+       }
+     else{
+     	estadoPulsador=BUTTON_UP;
+      }
+    }break;
+    
+    case (BUTTON_DOWN):
+      if(digitalRead(PULSADOR)==HIGH){
+        estadoPulsador=BUTTON_RAISING;
+      }
+    case (BUTTON_RAISING):
+    if(millis()-TiempoAhora>RETARDO){
+      TiempoAhora=millis();
+      if(digitalRead(PULSADOR)==HIGH){
+        estadoPulsador=BUTTON_UP;
+        buttonReleased();
+      }
+      else{
+        estadoPulsador=BUTTON_DOWN;
+      }break;
+     }
+     }
+    }  
+
+void buttonPressed(){
+  if ((digitalRead(LED)) == LOW){
+    digitalWrite (LED, HIGH);
+  }
+  else digitalWrite (LED, LOW);
+
+  if (cont > FFINAL) {
+    cont = 0;
+  }
+  else cont++;
+  PORTD = conteo[cont];
+  
+}
+void buttonReleased(){
+}
+     
